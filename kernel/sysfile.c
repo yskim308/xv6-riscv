@@ -66,6 +66,12 @@ sys_dup(void)
 }
 
 uint64
+sys_countread(void)
+{
+  return myproc()->read_count;
+}
+
+uint64
 sys_read(void)
 {
   struct file *f;
@@ -76,6 +82,7 @@ sys_read(void)
   argint(2, &n);
   if (argfd(0, 0, &f) < 0)
     return -1;
+  myproc()->read_count++;
   return fileread(f, p, n);
 }
 

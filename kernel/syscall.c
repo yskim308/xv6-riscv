@@ -104,21 +104,6 @@ extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
 extern uint64 sys_countread(void);
 
-static uint64 read_count = 0;
-
-extern uint64
-sys_read(void)
-{
-  read_count++;
-  return 0;
-}
-
-extern uint64
-sys_countread(void)
-{
-  return read_count;
-}
-
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
 static uint64 (*syscalls[])(void) = {
