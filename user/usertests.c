@@ -27,6 +27,24 @@ char buf[BUFSZ];
 // fair amount of time.
 //
 
+void
+read_count(char *s)
+{
+  for (int i = 0; i < 1000; ++i) {
+    char dummy = 'a';
+    read(0, &dummy, 0);
+  }
+
+  int read_count = countread();
+  if (read_count != 1000) {
+    printf("read_count returns %d instead of 1000", read_count);
+    exit(1);
+  } else {
+    printf("read_count test succesful");
+    exit(0);
+  }
+}
+
 // what if you pass ridiculous pointers to system calls
 // that read user memory with copyin?
 void
@@ -2767,6 +2785,7 @@ struct test {
   void (*f)(char *);
   char *s;
 } quicktests[] = {
+  {read_count, "readcount"},
   {copyin, "copyin"},
   {copyout, "copyout"},
   {copyinstr1, "copyinstr1"},
