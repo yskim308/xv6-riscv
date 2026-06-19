@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "pstat.h"
 
 struct cpu cpus[NCPU];
 
@@ -125,6 +126,8 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
+  p->tickets = 1;
+  p->ticks = 0;
 
   // Allocate a trapframe page.
   if ((p->trapframe = (struct trapframe *)kalloc()) == 0) {
@@ -269,6 +272,8 @@ kfork(void)
     return -1;
   }
 
+  np->tickets = p->tickets;
+
   // Copy user memory from parent to child.
   if (uvmcopy(p->pagetable, np->pagetable, p->sz) < 0) {
     freeproc(np);
@@ -304,6 +309,37 @@ kfork(void)
   release(&np->lock);
 
   return pid;
+}
+
+void
+ksettickets(int num)
+{
+  struct proc *p = myproc();
+  acquire(&p->lock);
+  p->tickets = num;
+  release(&p->lock);
+}
+
+void
+kgetpinfo(struct pstat *pinfo)
+{
+  struct proc *p;
+  for (int i = 0; i < NPROC; ++i) {
+    p = &proc[NPROC];
+    acquire(&p->lock);
+    if (p->state == UNUSED) {
+      pinfo->inuse[i] = 0;
+      release(&p->lock);
+      continue;
+    }
+
+    pinfo->inuse[i] = 1;
+    pinfo->tickets[i] = p->tickets;
+    pinfo->pid[i] = p->pid;
+    pinfo->ticks[i] = p->ticks;
+
+    release(&p->lock);
+  }
 }
 
 // Pass p's abandoned children to init.
