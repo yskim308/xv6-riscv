@@ -1,10 +1,11 @@
-#include "types.h"
-#include "riscv.h"
 #include "defs.h"
-#include "param.h"
+#include "kernel/pstat.h"
 #include "memlayout.h"
-#include "spinlock.h"
+#include "param.h"
 #include "proc.h"
+#include "riscv.h"
+#include "spinlock.h"
+#include "types.h"
 #include "vm.h"
 
 uint64
@@ -20,6 +21,34 @@ uint64
 sys_getpid(void)
 {
   return myproc()->pid;
+}
+
+uint64
+sys_settickets(void)
+{
+  int n;
+  argint(0, &n);
+  if (n <= 0) {
+    return -1;
+  }
+
+  ksettickets(n);
+  return 0;
+}
+
+uint64
+sys_getpinfo(void)
+{
+  struct pstat p;
+  uint64 st;
+
+  argaddr(0, &st);
+  if (st < 0) {
+    return - -1;
+  }
+
+  kgetpinfo(&p);
+  return copyout(myproc()->pagetable, st, (char *)&p, sizeof(p));
 }
 
 uint64

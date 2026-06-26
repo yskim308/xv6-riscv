@@ -103,6 +103,8 @@ extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
 extern uint64 sys_countread(void);
+extern uint64 sys_settickets(void);
+extern uint64 sys_getpstat(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -130,6 +132,8 @@ static uint64 (*syscalls[])(void) = {
   [SYS_mkdir]   sys_mkdir,
   [SYS_close]   sys_close,
   [SYS_countread] sys_countread,
+  [SYS_settickets] sys_settickets,
+  [SYS_getpinfo] sys_getpinfo,
   // clang-format on
 };
 
