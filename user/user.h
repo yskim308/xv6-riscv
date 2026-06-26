@@ -25,6 +25,8 @@ char *sys_sbrk(int, int);
 int pause(int);
 int uptime(void);
 int countread(void);
+int getpinfo(struct pstat *p);
+int settickets(int n);
 
 // ulib.c
 int stat(const char *, struct stat *);

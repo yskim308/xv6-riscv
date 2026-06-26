@@ -20,7 +20,9 @@ sub entry {
     print " ecall\n";
     print " ret\n";
 }
-	
+
+entry("getpinfo");
+entry("settickets");
 entry("countread");
 entry("fork");
 entry("exit");
