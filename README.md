@@ -46,4 +46,4 @@ Lastly, we create a simple userspace program that
 
 We then consolidate the data and create a graph to see the ticket usage over time and confirm that the lottery scheduler is working as expected
 
-<img src="lottery_graph.png" width="50%">
+<img src="scheduler_graph/lottery_graph.png" width="70%">
