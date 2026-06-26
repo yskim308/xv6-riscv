@@ -519,6 +519,11 @@ scheduler(void)
       release(&p->lock);
     }
 
+    if (total_tickets <= 0) {
+      asm volatile("wfi");
+      continue;
+    }
+
     int counter = 0;
     int winner = rand() % total_tickets;
     for (p = proc; p < &proc[NPROC]; p++) {
@@ -526,23 +531,20 @@ scheduler(void)
       if (p->state == RUNNABLE) {
         counter += p->tickets;
         if (counter > winner) {
+          p->state = RUNNING;
+          c->proc = p;
+          swtch(&c->context, &p->context);
+          p->ticks += 1;
+
+          c->proc = 0;
+          found = 1;
+          release(&p->lock);
           break;
         }
       }
       release(&p->lock);
     }
 
-    // at least one proccess found
-    if (counter != 0) {
-      p->state = RUNNING;
-      c->proc = p;
-      swtch(&c->context, &p->context);
-      p->ticks += 1;
-
-      c->proc = 0;
-      found = 1;
-      release(&p->lock);
-    }
     // for (p = proc; p < &proc[NPROC]; p++) {
     //   acquire(&p->lock);
     //   if (p->state == RUNNABLE) {
