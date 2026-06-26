@@ -325,7 +325,7 @@ kgetpinfo(struct pstat *pinfo)
 {
   struct proc *p;
   for (int i = 0; i < NPROC; ++i) {
-    p = &proc[NPROC];
+    p = &proc[i];
     acquire(&p->lock);
     if (p->state == UNUSED) {
       pinfo->inuse[i] = 0;
