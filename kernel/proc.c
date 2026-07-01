@@ -343,7 +343,7 @@ kgetpinfo(struct pstat *pinfo)
 }
 
 int
-kmprotect(uint64 addr, int len)
+changewrite(uint64 addr, int len, int write)
 {
   if (addr < PGSIZE || len <= 0) {
     return -1;
@@ -369,11 +369,27 @@ kmprotect(uint64 addr, int len)
 
   for (i = addr; i < addr + len; i += PGSIZE) {
     pte = walk(pgtable, i, 0);
-    *pte &= ~PTE_W;
+    if (write == 0) {
+      *pte &= ~PTE_W;
+    } else {
+      *pte |= PTE_W;
+    }
   }
 
   sfence_vma();
   return 0;
+}
+
+int
+kmprotect(uint64 addr, int len)
+{
+  return changewrite(addr, len, 0);
+}
+
+int
+kmunprotect(uint64 addr, int len)
+{
+  return changewrite(addr, len, 1);
 }
 
 // Pass p's abandoned children to init.
