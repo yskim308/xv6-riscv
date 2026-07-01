@@ -47,3 +47,39 @@ Lastly, we create a simple userspace program that
 We then consolidate the data and create a graph to see the ticket usage over time and confirm that the lottery scheduler is working as expected
 
 <img src="scheduler_graph/lottery_graph.png" width="70%">
+
+# 3: Virtual Memory (Null Pointers and Read-only Pages)
+
+Next, we add in support for null pointer exceptions and read-only protect on our pages.
+
+Null pointer exceptions are done quite simply by making the code not start at address 0 and instead in the next page over. This is done by
+
+1. setting the initial size to PGSIZE in exec()
+2. making page table copying begin at PGSIZE and never initialize the first page
+3. updating the linker script to make user programs begin at PGSIZE instead of 0 (0x1000)
+4. updating the trap handler to print segfault and kill the process if an invalid page is accessed
+
+This behavior can be verified by running xv6 and executing the null pointer test
+
+```bash
+make qemu
+./nullptr
+```
+
+The program should crash with a segfault.
+
+To create read-only regions, we create the syscalls `mprotect` and `munprotect`.
+
+1. add the syscall plumbing (see project 1)
+2. for both mprotect and munprotect, check the addr and len parameters and ensure that there are no invalid ranges
+3. set the write bit of the page to either 0 or 1 (protect / unprotect)
+4. flush the TLB to get rid of invalid entries (ideally we would do partial flushing but xv6 does not support it)
+
+Then a user space program is created to test that the syscalls are working (also after adding syscall plumbing in userspace, see project 1)
+
+To verify, run the `protect` userspace program
+
+```bash
+make qemu
+./protect
+```
