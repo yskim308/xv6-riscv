@@ -303,7 +303,7 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
   uint flags;
   char *mem;
 
-  for (i = 0; i < sz; i += PGSIZE) {
+  for (i = PGSIZE; i < sz; i += PGSIZE) {
     if ((pte = walk(old, i, 0)) == 0)
       continue; // page table entry hasn't been allocated
     if ((*pte & PTE_V) == 0)
