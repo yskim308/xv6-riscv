@@ -342,6 +342,40 @@ kgetpinfo(struct pstat *pinfo)
   }
 }
 
+int
+kmprotect(uint64 addr, int len)
+{
+  if (addr < PGSIZE || len <= 0) {
+    return -1;
+  }
+
+  if (addr % PGSIZE != 0 || len % PGSIZE != 0) {
+    return -1;
+  }
+
+  if (addr + len < addr || addr + len > myproc()->sz) {
+    return -1;
+  }
+
+  uint64 i;
+  pte_t *pte;
+  pagetable_t pgtable = myproc()->pagetable;
+  for (i = addr; i < addr + len; i += PGSIZE) {
+    pte = walk(pgtable, i, 0);
+    if (pte == 0 || (*pte & PTE_V) == 0) {
+      return -1;
+    }
+  }
+
+  for (i = addr; i < addr + len; i += PGSIZE) {
+    pte = walk(pgtable, i, 0);
+    *pte &= ~PTE_W;
+  }
+
+  sfence_vma();
+  return 0;
+}
+
 // Pass p's abandoned children to init.
 // Caller must hold wait_lock.
 void
