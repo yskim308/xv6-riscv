@@ -27,6 +27,8 @@ int uptime(void);
 int countread(void);
 int getpinfo(struct pstat *p);
 int settickets(int n);
+int mprotect(void *addr, int len);
+int munprotect(void *addr, int len);
 
 // ulib.c
 int stat(const char *, struct stat *);

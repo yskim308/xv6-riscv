@@ -21,6 +21,8 @@ sub entry {
     print " ret\n";
 }
 
+entry("mprotect");
+entry("munprotect");
 entry("getpinfo");
 entry("settickets");
 entry("countread");
