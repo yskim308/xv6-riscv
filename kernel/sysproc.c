@@ -18,6 +18,26 @@ sys_exit(void)
 }
 
 uint64
+sys_mprotect(void)
+{
+  uint64 addr;
+  int len;
+  argaddr(0, &addr);
+  argint(1, &len);
+  return kmprotect(addr, len);
+}
+
+uint64
+sys_munprotect(void)
+{
+  uint64 addr;
+  int len;
+  argaddr(0, &addr);
+  argint(1, &len);
+  return kmunprotect(addr, len);
+}
+
+uint64
 sys_getpid(void)
 {
   return myproc()->pid;

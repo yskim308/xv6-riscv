@@ -85,6 +85,8 @@ void            kexit(int);
 int             kfork(void);
 void             ksettickets(int);
 void            kgetpinfo(struct pstat *p);
+int             kmprotect(uint64 addr, int len);
+int             kmunprotect(uint64 addr, int len);
 int             growproc(int);
 void            proc_mapstacks(pagetable_t);
 pagetable_t     proc_pagetable(struct proc *);
